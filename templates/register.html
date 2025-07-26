@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Register - SubtitleAI Pro{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 50px auto;">
+    <h2>🚀 Create Your Account</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 30px;">
+        Join SubtitleAI Pro and start generating professional subtitles
+    </p>
+    
+    <form method="POST" id="registerForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" required 
+                   placeholder="Choose a unique username" maxlength="50">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" required 
+                   placeholder="your@email.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required 
+                   placeholder="Create a strong password" minlength="6">
+            <div id="passwordStrength" style="font-size: 0.9rem; margin-top: 5px;"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required 
+                   placeholder="Confirm your password">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">
+            🎬 Create Account
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+        <p>Already have an account? 
+           <a href="{{ url_for('login') }}" style="color: #667eea; font-weight: 600;">Login here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        showAlert('Passwords do not match!', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        e.preventDefault();
+        showAlert('Password must be at least 6 characters long!', 'error');
+        return;
+    }
+});
+</script>
+{% endblock %}

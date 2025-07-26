@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SubtitleAI Pro{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>🎬 Your Subtitle Dashboard</h1>
+    <p>Manage your video transcription jobs and download completed subtitles</p>
+</div>
+
+<!-- Submit New Job Card -->
+<div class="card">
+    <h2>🚀 Generate New Subtitles</h2>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+        <div class="tab-nav" style="display: flex; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+            <button class="tab-btn active" onclick="showTab('youtube')" 
+                    style="flex: 1; padding: 12px; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">
+                📺 YouTube URL
+            </button>
+            <button class="tab-btn" onclick="showTab('upload')" 
+                    style="flex: 1; padding: 12px; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">
+                📁 Upload Video
+            </button>
+        </div>
+    
+        <!-- YouTube URL Tab -->
+        <div id="youtube-tab" class="tab-content active">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="videoUrl">YouTube Video URL</label>
+                    <input type="url" id="videoUrl" class="form-control" 
+                           placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." 
+                           style="font-family: monospace;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="modelSize">AI Model Quality</label>
+                    <select id="modelSize" class="form-control">
+                        <option value="tiny">Tiny - Fastest processing (~30 seconds)</option>
+                        <option value="base" selected>Base - Balanced quality and speed (~1-2 minutes)</option>
+                        <option value="small">Small - Better accuracy (~2-3 minutes)</option>
+                        <option value="medium">Medium - Best quality (~3-5 minutes)</option>
+                    </select>
+                </div>
+                
+                <button id="submitBtn" class="btn btn-primary btn-full">
+                    🚀 Generate Subtitles
+                </button>
+            </div>
+        </div>
+        
+        <!-- Video Upload Tab -->
+        <div id="upload-tab" class="tab-content" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="video-file">Upload Video File</label>
+                    <div class="file-upload-area" id="file-upload-area" 
+                         style="border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; background: #f9f9f9; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="upload-content">
+                            <div class="upload-icon" style="font-size: 48px; margin-bottom: 10px;">📁</div>
+                            <p class="upload-text" style="font-size: 18px; margin: 10px 0; color: #333;">Drag & drop your video here or click to browse</p>
+                            <p class="upload-subtext" style="color: #666; font-size: 14px;">Supports: MP4, AVI, MOV, MKV, WMV (Max: 500MB)</p>
+                        </div>
+                        <input type="file" id="video-file" name="video_file" accept="video/*" hidden>
+                    </div>
+                    <div id="file-info" class="file-info" style="display: none; margin-top: 10px; padding: 10px; background: #e8f5e8; border-radius: 5px;">
+                        <span id="file-name" style="font-weight: 500;"></span>
+                        <button type="button" id="remove-file" class="btn-remove" 
+                                style="float: right; background: #f44336; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">×</button>
+                    </div>
+                    <div id="upload-progress" class="progress-container" style="display: none; margin-top: 10px;">
+                        <div class="progress-bar" style="width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+                            <div id="progress-fill" class="progress-fill" style="height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <span id="progress-text" style="font-size: 14px; color: #666; margin-top: 5px; display: block;">0%</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="upload-model_size">AI Model Quality</label>
+                    <select id="upload-model_size" class="form-control">
+                        <option value="tiny">Tiny - Fastest processing (~30 seconds)</option>
+                        <option value="base" selected>Base - Balanced quality and speed (~1-2 minutes)</option>
+                        <option value="small">Small - Better accuracy (~2-3 minutes)</option>
+                        <option value="medium">Medium - Best quality (~3-5 minutes)</option>
+                    </select>
+                </div>
+                
+                <button id="upload-btn" type="submit" class="btn btn-primary btn-full" disabled>
+                    🚀 Generate Subtitles
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="jobStatus" style="margin-top: 20px;"></div>
+</div>
+
+<!-- Jobs List -->
+<div class="card">
+    <h2>📋 Your Subtitle Jobs</h2>
+    
+    {% if jobs %}
+        {% for job in jobs %}
+        <div class="job-card" data-job-id="{{ job[0] }}" data-status="{{ job[5] }}">
+            <div class="job-header">
+                <h3 class="job-title">
+                    {% if job[3] %}
+                        {{ job[3] }}
+                    {% else %}
+                        Processing...
+                    {% endif %}
+                </h3>
+                <span class="job-status status-{{ job[5] }}">
+                    {{ job[5].upper() }}
+                </span>
+            </div>
+            
+            <div class="job-details">
+                {% if job[11] == 'upload' %}
+                    <strong>Type:</strong> Uploaded File<br>
+                    <strong>File:</strong> {{ job[3] or 'Processing...' }}<br>
+                    {% if job[13] %}
+                        <strong>Size:</strong> {{ "%.1f"|format(job[13] / (1024*1024)) }} MB<br>
+                    {% endif %}
+                {% else %}
+                    <strong>Type:</strong> YouTube Video<br>
+                    <strong>URL:</strong> {{ job[2] }}<br>
+                {% endif %}
+                <strong>Model:</strong> {{ job[4].title() }}<br>
+                <strong>Submitted:</strong> {{ job[9] }}<br>
+                {% if job[10] %}
+                    <strong>Completed:</strong> {{ job[10] }}<br>
+                {% endif %}
+            </div>
+            
+            {% if job[6] %}
+            <div class="job-progress">
+                📊 {{ job[6] }}
+            </div>
+            {% endif %}
+            
+            <div class="job-actions">
+                {% if job[5] == 'completed' %}
+                    <a href="{{ url_for('download_subtitle', job_id=job[0]) }}" class="btn btn-success">
+                        📥 Download SRT
+                    </a>
+                {% elif job[5] == 'failed' %}
+                    <span style="color: #d32f2f; font-weight: 500;">❌ Failed</span>
+                {% elif job[5] == 'processing' %}
+                    <span style="color: #1976d2; font-weight: 500;">
+                        <span class="loading-spinner"></span>Processing...
+                    </span>
+                {% else %}
+                    <span style="color: #f57c00; font-weight: 500;">⏳ Queued</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>📋 No Jobs Yet</h3>
+            <p>Submit your first YouTube video above to get started!</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Tips -->
+<div class="card">
+    <h2>💡 Quick Tips</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div>
+            <h4 style="color: #667eea; margin-bottom: 10px;">⚡ Model Selection</h4>
+            <p><strong>Tiny:</strong> Perfect for quick previews<br>
+               <strong>Base:</strong> Best balance for most videos<br>
+               <strong>Small/Medium:</strong> Use for important content</p>
+        </div>
+        
+        <div>
+            <h4 style="color: #667eea; margin-bottom: 10px;">🎯 Best Results</h4>
+            <p>• Clear audio works best<br>
+               • Shorter videos process faster<br>
+               • Any language converts to English<br>
+               • SRT files work with all players</p>
+        </div>
+        
+        <div>
+            <h4 style="color: #667eea; margin-bottom: 10px;">⏰ Processing Time</h4>
+            <p>Processing is asynchronous - you can close this page and come back later. 
+               We'll keep your jobs safe and ready for download!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

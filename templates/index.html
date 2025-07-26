@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1>🎬 SubtitleAI Pro</h1>
+    <p>AI-Powered YouTube Transcription Platform</p>
+</div>
+
+<div class="welcome-section">
+    <h2>Transform Any YouTube Video into Perfect Subtitles</h2>
+    <p>Our advanced AI technology converts speech from any language into accurate English subtitles. 
+       Submit your video, come back later, and download professional-quality SRT files.</p>
+    
+    <div style="margin: 30px 0;">
+        <a href="{{ url_for('register') }}" class="btn btn-primary" style="margin-right: 15px;">🚀 Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary">🔐 Login</a>
+    </div>
+</div>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <h3>🤖 AI-Powered</h3>
+        <p>Uses advanced Whisper AI technology to transcribe speech with high accuracy, supporting multiple languages and converting them to English.</p>
+    </div>
+    
+    <div class="feature-card">
+        <h3>⏰ Asynchronous Processing</h3>
+        <p>Submit your videos and come back later. No need to wait around - we'll process everything in the background and notify you when ready.</p>
+    </div>
+    
+    <div class="feature-card">
+        <h3>🎯 Professional Quality</h3>
+        <p>Choose from multiple AI models (Tiny, Base, Small, Medium) to balance speed and accuracy based on your needs.</p>
+    </div>
+    
+    <div class="feature-card">
+        <h3>📥 Easy Download</h3>
+        <p>Download your subtitles as standard SRT files, compatible with all major video players and editing software.</p>
+    </div>
+    
+    <div class="feature-card">
+        <h3>🔐 Secure & Private</h3>
+        <p>Your videos and subtitles are processed securely. We don't store video content, only the generated subtitle files.</p>
+    </div>
+    
+    <div class="feature-card">
+        <h3>📱 Mobile Friendly</h3>
+        <p>Access your dashboard and download subtitles from any device. Our responsive design works perfectly on mobile and desktop.</p>
+    </div>
+</div>
+{% endblock %}
