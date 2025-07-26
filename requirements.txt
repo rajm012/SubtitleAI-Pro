@@ -25,6 +25,5 @@ coloredlogs==15.0.1
 humanfriendly==10.0
 PyYAML==6.0.2
 
-# Production WSGI server
+# Production WSGI server for Render
 gunicorn==22.0.0
-waitress==3.0.0

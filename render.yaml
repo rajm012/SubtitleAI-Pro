@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: subtitle-backend
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    preDeployCommand: python init_db.py
+    envVars:
+      - key: PORT
+        value: 10000

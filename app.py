@@ -495,6 +495,9 @@ def debug_job(job_id):
     <pre>{job[7][:500] if job[7] else 'No content'}...</pre>
     """
 
+
+init_db()
+
 if __name__ == '__main__':
     init_db()
     print("🚀 Starting SubtitleAI Pro Web Application...")

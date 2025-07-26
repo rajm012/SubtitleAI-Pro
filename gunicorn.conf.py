@@ -1,15 +1,15 @@
-# Gunicorn configuration file for production deployment
+# Gunicorn configuration file for Render deployment
 import os
 
 # Server socket
-bind = f"0.0.0.0:{os.environ.get('PORT', '8000')}"
+bind = f"0.0.0.0:{os.environ.get('PORT', '10000')}"
 backlog = 2048
 
 # Worker processes
 workers = int(os.environ.get('WEB_CONCURRENCY', 1))
 worker_class = "sync"
 worker_connections = 1000
-timeout = 120
+timeout = 300  # Increased timeout for AI processing
 keepalive = 2
 
 # Restart workers after this many requests, to help prevent memory leaks
@@ -31,7 +31,3 @@ pidfile = None
 user = None
 group = None
 tmp_upload_dir = None
-
-# SSL (if needed)
-# keyfile = None
-# certfile = None
